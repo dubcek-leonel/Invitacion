@@ -13,6 +13,10 @@ export const Admin: React.FC = () => {
   const [attendees, setAttendees] = useState<Attendee[]>([]);
   const [activeTab, setActiveTab] = useState<'attendees' | 'bans' | 'appeals'>('attendees');
   const [busy, setBusy] = useState(false);
+  const [attendeesPage, setAttendeesPage] = useState(1);
+  const [bansPage, setBansPage] = useState(1);
+  const [appealsPage, setAppealsPage] = useState(1);
+  const pageSize = 10;
 
   const load = async () => {
     const data = await listBans();
@@ -26,6 +30,12 @@ export const Admin: React.FC = () => {
   useEffect(() => {
     if (authed) load();
   }, [authed]);
+
+  useEffect(() => {
+    if (activeTab === 'attendees') setAttendeesPage(1);
+    if (activeTab === 'bans') setBansPage(1);
+    if (activeTab === 'appeals') setAppealsPage(1);
+  }, [activeTab]);
 
   const onLogin = (e: React.FormEvent) => {
     e.preventDefault();
@@ -147,7 +157,7 @@ export const Admin: React.FC = () => {
       {activeTab === 'attendees' && (
       <div className="bg-white/10 border-2 border-yellow-400 rounded-2xl p-4 mb-8">
         <h3 className="text-xl font-bold text-yellow-300 mb-4">Asistentes</h3>
-        <div className="overflow-x-auto">
+        <div className="overflow-x-auto hidden md:block">
           <table className="w-full text-left">
             <thead>
               <tr>
@@ -161,7 +171,9 @@ export const Admin: React.FC = () => {
               </tr>
             </thead>
             <tbody className="text-white">
-              {attendees.map((a) => {
+              {attendees
+                .slice((attendeesPage - 1) * pageSize, attendeesPage * pageSize)
+                .map((a) => {
                 const banned = bans.some(
                   (b) =>
                     b.firstName.toLowerCase() === a.firstName.toLowerCase() &&
@@ -197,6 +209,48 @@ export const Admin: React.FC = () => {
             </tbody>
           </table>
         </div>
+        <div className="md:hidden space-y-3">
+          {attendees
+            .slice((attendeesPage - 1) * pageSize, attendeesPage * pageSize)
+            .map((a) => {
+              const banned = bans.some(
+                (b) =>
+                  b.firstName.toLowerCase() === a.firstName.toLowerCase() &&
+                  b.lastName.toLowerCase() === a.lastName.toLowerCase()
+              );
+              return (
+                <div key={a.id} className="bg-white/10 border border-white/20 rounded-xl p-3">
+                  <div className="font-bold">{a.firstName} {a.lastName}</div>
+                  <div className="text-sm">{a.career}</div>
+                  <div className="text-sm">Ciclo {a.cycle}</div>
+                  <div className="text-sm">{a.contribution}</div>
+                  <div className="text-sm">{banned ? 'BANEADO' : 'OK'}</div>
+                  <div className="mt-2 flex gap-2">
+                    {!banned ? (
+                      <button disabled={busy} onClick={() => onBanAttendee(a)} className="bg-red-600 text-white font-bold py-2 px-3 rounded w-full">Banear</button>
+                    ) : (
+                      <button disabled={busy} onClick={() => onUnbanAttendee(a)} className="bg-green-600 text-white font-bold py-2 px-3 rounded w-full">Desbanear</button>
+                    )}
+                  </div>
+                </div>
+              );
+            })}
+        </div>
+        <div className="mt-4 flex items-center justify-end gap-2">
+          <button
+            onClick={() => setAttendeesPage((p) => Math.max(1, p - 1))}
+            disabled={attendeesPage === 1}
+            className="bg-white/10 text-white border border-white/20 px-3 py-1 rounded disabled:opacity-50"
+          >Anterior</button>
+          <span className="text-sm">
+            Página {attendeesPage} de {Math.max(1, Math.ceil(attendees.length / pageSize))}
+          </span>
+          <button
+            onClick={() => setAttendeesPage((p) => (p < Math.ceil(attendees.length / pageSize) ? p + 1 : p))}
+            disabled={attendeesPage >= Math.ceil(attendees.length / pageSize)}
+            className="bg-white/10 text-white border border-white/20 px-3 py-1 rounded disabled:opacity-50"
+          >Siguiente</button>
+        </div>
       </div>
       )}
 
@@ -205,7 +259,7 @@ export const Admin: React.FC = () => {
       {activeTab === 'bans' && (
       <div className="bg-white/10 border-2 border-yellow-400 rounded-2xl p-4">
         <h3 className="text-xl font-bold text-yellow-300 mb-4">Listado de baneos</h3>
-        <div className="overflow-x-auto">
+        <div className="overflow-x-auto hidden md:block">
           <table className="w-full text-left">
             <thead>
               <tr>
@@ -217,7 +271,9 @@ export const Admin: React.FC = () => {
               </tr>
             </thead>
             <tbody className="text-white">
-              {bans.map((b) => (
+              {bans
+                .slice((bansPage - 1) * pageSize, bansPage * pageSize)
+                .map((b) => (
                 <tr key={b.id} className="border-b border-white/20">
                   <td className="p-2">{b.firstName}</td>
                   <td className="p-2">{b.lastName}</td>
@@ -238,13 +294,42 @@ export const Admin: React.FC = () => {
             </tbody>
           </table>
         </div>
+        <div className="md:hidden space-y-3">
+          {bans
+            .slice((bansPage - 1) * pageSize, bansPage * pageSize)
+            .map((b) => (
+              <div key={b.id} className="bg-white/10 border border-white/20 rounded-xl p-3">
+                <div className="font-bold">{b.firstName} {b.lastName}</div>
+                <div className="text-sm">{b.reason}</div>
+                <div className="text-xs">{new Date(b.timestamp).toLocaleString()}</div>
+                <div className="mt-2">
+                  <button disabled={busy} onClick={() => onRemove(b.id)} className="bg-red-600 text-white font-bold py-2 px-3 rounded w-full">Quitar</button>
+                </div>
+              </div>
+            ))}
+        </div>
+        <div className="mt-4 flex items-center justify-end gap-2">
+          <button
+            onClick={() => setBansPage((p) => Math.max(1, p - 1))}
+            disabled={bansPage === 1}
+            className="bg-white/10 text-white border border-white/20 px-3 py-1 rounded disabled:opacity-50"
+          >Anterior</button>
+          <span className="text-sm">
+            Página {bansPage} de {Math.max(1, Math.ceil(bans.length / pageSize))}
+          </span>
+          <button
+            onClick={() => setBansPage((p) => (p < Math.ceil(bans.length / pageSize) ? p + 1 : p))}
+            disabled={bansPage >= Math.ceil(bans.length / pageSize)}
+            className="bg-white/10 text-white border border-white/20 px-3 py-1 rounded disabled:opacity-50"
+          >Siguiente</button>
+        </div>
       </div>
       )}
 
       {activeTab === 'appeals' && (
       <div className="mt-8 bg-white/10 border-2 border-yellow-400 rounded-2xl p-4">
         <h3 className="text-xl font-bold text-yellow-300 mb-4">Apelaciones</h3>
-        <div className="overflow-x-auto">
+        <div className="overflow-x-auto hidden md:block">
           <table className="w-full text-left">
             <thead>
               <tr>
@@ -257,7 +342,9 @@ export const Admin: React.FC = () => {
               </tr>
             </thead>
             <tbody className="text-white">
-              {appeals.map((a) => {
+              {appeals
+                .slice((appealsPage - 1) * pageSize, appealsPage * pageSize)
+                .map((a) => {
                 const status = String(a.status).toUpperCase();
                 const statusClass =
                   status === 'APPROVED'
@@ -299,6 +386,48 @@ export const Admin: React.FC = () => {
               )}
             </tbody>
           </table>
+        </div>
+        <div className="md:hidden space-y-3">
+          {appeals
+            .slice((appealsPage - 1) * pageSize, appealsPage * pageSize)
+            .map((a) => {
+              const status = String(a.status).toUpperCase();
+              const isPending = status === 'PENDING';
+              return (
+                <div key={a.id} className="bg-white/10 border border-white/20 rounded-xl p-3">
+                  <div className="font-bold">{a.firstName} {a.lastName}</div>
+                  <div className="text-sm">{a.message}</div>
+                  <div className="text-xs">{new Date(a.timestamp).toLocaleString()}</div>
+                  <div className="mt-2 flex gap-2">
+                    <button
+                      disabled={busy || !isPending}
+                      onClick={() => onApproveAppeal(a.id)}
+                      className={`${isPending ? 'bg-green-600' : 'bg-green-900/50'} text-white font-bold py-2 px-3 rounded w-full`}
+                    >{isPending ? 'Aprobar y desbanear' : 'Aprobada'}</button>
+                    <button
+                      disabled={busy || !isPending}
+                      onClick={() => onRejectAppeal(a.id)}
+                      className={`${isPending ? 'bg-red-600' : 'bg-red-900/50'} text-white font-bold py-2 px-3 rounded w-full`}
+                    >{isPending ? 'Rechazar' : 'Rechazada'}</button>
+                  </div>
+                </div>
+              );
+            })}
+        </div>
+        <div className="mt-4 flex items-center justify-end gap-2">
+          <button
+            onClick={() => setAppealsPage((p) => Math.max(1, p - 1))}
+            disabled={appealsPage === 1}
+            className="bg-white/10 text-white border border-white/20 px-3 py-1 rounded disabled:opacity-50"
+          >Anterior</button>
+          <span className="text-sm">
+            Página {appealsPage} de {Math.max(1, Math.ceil(appeals.length / pageSize))}
+          </span>
+          <button
+            onClick={() => setAppealsPage((p) => (p < Math.ceil(appeals.length / pageSize) ? p + 1 : p))}
+            disabled={appealsPage >= Math.ceil(appeals.length / pageSize)}
+            className="bg-white/10 text-white border border-white/20 px-3 py-1 rounded disabled:opacity-50"
+          >Siguiente</button>
         </div>
       </div>
       )}
