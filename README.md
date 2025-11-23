@@ -18,3 +18,20 @@ View your app in AI Studio: https://ai.studio/apps/drive/1ID0RSQ74uL-JX6pveW3QVn
 2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
 3. Run the app:
    `npm run dev`
+
+## Supabase
+
+This project can optionally persist attendees to Supabase. The app reads the following Vite env variables:
+
+- `VITE_SUPABASE_URL` — your Supabase project URL
+- `VITE_SUPABASE_ANON_KEY` — your Supabase public (publishable) key
+
+You can copy the example env file and run locally:
+
+```bash
+cp .env.example .env.local
+# or create .env.local and add the values
+npm run dev
+```
+
+The repository includes an `.env.example` with the provided project URL and publishable key.

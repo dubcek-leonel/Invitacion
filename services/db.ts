@@ -1,17 +1,15 @@
 import { Attendee } from "../types";
-import { supabase } from "./supabase";
+import { supabase } from "./supabase.ts";
 
-const SUPABASE_ENABLED = !!(
-  import.meta.env.VITE_SUPABASE_URL && import.meta.env.VITE_SUPABASE_ANON_KEY
-);
+const SUPABASE_ENABLED = !!supabase;
 
 const DB_KEY = "remoja_biscocho_db";
 const BAN_KEY = "banned_user_ip_simulation";
 
 // Simulate saving to a database
-export const saveAttendee = (
+export const saveAttendee = async (
   attendee: Omit<Attendee, "id" | "timestamp">
-): void => {
+): Promise<void> => {
   const currentData = getAttendees();
   const newAttendee: Attendee = {
     ...attendee,
@@ -23,17 +21,17 @@ export const saveAttendee = (
   localStorage.setItem(DB_KEY, JSON.stringify(currentData));
 
   if (SUPABASE_ENABLED) {
-    (async () => {
-      await supabase.from("attendees").insert({
-        id: newAttendee.id,
-        firstName: newAttendee.firstName,
-        lastName: newAttendee.lastName,
-        cycle: newAttendee.cycle,
-        career: newAttendee.career,
-        contribution: newAttendee.contribution,
-        timestamp: newAttendee.timestamp,
-      });
-    })();
+    const { error } = await supabase.from("attendees").insert({
+      firstName: newAttendee.firstName,
+      lastName: newAttendee.lastName,
+      cycle: newAttendee.cycle,
+      career: newAttendee.career,
+      contribution: newAttendee.contribution,
+      timestamp: newAttendee.timestamp,
+    });
+    if (error) {
+      console.error("Supabase insert failed", error);
+    }
   }
 };
 
@@ -50,8 +48,20 @@ export const getAttendeesAsync = async (): Promise<Attendee[]> => {
         .select("*")
         .order("timestamp", { ascending: false });
       if (error) throw error;
-      if (data) return data as Attendee[];
-    } catch (_) {}
+      if (data && data.length > 0) {
+        return (data as any[]).map((d) => ({
+          id: String(d.id),
+          firstName: d.firstName,
+          lastName: d.lastName,
+          cycle: d.cycle,
+          career: d.career,
+          contribution: d.contribution,
+          timestamp: d.timestamp,
+        })) as Attendee[];
+      }
+    } catch (e) {
+      console.error("Supabase select failed", e);
+    }
   }
   return getAttendees().reverse();
 };
