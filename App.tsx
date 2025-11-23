@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { Routes, Route, useNavigate } from 'react-router-dom';
+import { Routes, Route, useNavigate, Navigate } from 'react-router-dom';
 import { ShitpostHeader } from './components/ShitpostHeader';
 import { RegistrationForm } from './components/RegistrationForm';
 import { BannedScreen } from './components/BannedScreen';
@@ -13,7 +13,7 @@ const App: React.FC = () => {
 
   useEffect(() => {
     if (isUserBanned()) {
-      navigate('/banned', { replace: true });
+      navigate('/baneado', { replace: true });
     }
   }, [navigate]);
 
@@ -34,7 +34,7 @@ const App: React.FC = () => {
   };
 
   const handleBan = () => {
-    navigate('/banned');
+    navigate('/baneado');
   };
 
   return (
@@ -58,9 +58,9 @@ const App: React.FC = () => {
       <div className="relative z-10">
         <Routes>
           <Route path="/admin" element={<Admin />} />
-          <Route path="/banned" element={<BannedScreen />} />
+          <Route path="/baneado" element={<BannedScreen />} />
           <Route path="/success" element={<SuccessScreen />} />
-          <Route path="/" element={
+          <Route path="/registro" element={
             <>
               <ShitpostHeader />
               <main className="container mx-auto px-4 py-8">
@@ -74,6 +74,7 @@ const App: React.FC = () => {
               </main>
             </>
           } />
+          <Route path="/" element={<Navigate to="/registro" replace />} />
         </Routes>
       </div>
       <Footer />
