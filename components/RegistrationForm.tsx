@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Attendee } from '../types';
-import { saveAttendee, banUser } from '../services/db';
+import { saveAttendee, banUser, setCurrentUser } from '../services/db';
 
 interface RegistrationFormProps {
   onSuccess: () => void;
@@ -15,14 +15,13 @@ export const RegistrationForm: React.FC<RegistrationFormProps> = ({ onSuccess, o
   const [contribution, setContribution] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
 
-    // Simulate checking database/IP logic with a delay
-    setTimeout(() => {
-        // KEVIN MARCA LOGIC
+    setTimeout(async () => {
         if (firstName.trim().toLowerCase() === 'kevin' && lastName.trim().toLowerCase().includes('marca')) {
+          setCurrentUser(firstName, lastName);
           banUser();
           onBan();
         } else {
@@ -33,11 +32,11 @@ export const RegistrationForm: React.FC<RegistrationFormProps> = ({ onSuccess, o
             career,
             contribution,
           };
-          saveAttendee(attendee);
+          await saveAttendee(attendee);
           onSuccess();
         }
         setIsLoading(false);
-    }, 3000); // 3 seconds delay for suspense
+    }, 3000);
   };
 
   if (isLoading) {
