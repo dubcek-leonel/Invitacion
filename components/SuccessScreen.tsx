@@ -1,12 +1,15 @@
 import React, { useEffect, useState } from 'react';
-import { getAttendees } from '../services/db';
+import { getAttendeesAsync } from '../services/db';
 import { Attendee } from '../types';
 
 export const SuccessScreen: React.FC = () => {
   const [attendees, setAttendees] = useState<Attendee[]>([]);
 
   useEffect(() => {
-    setAttendees(getAttendees().reverse()); // Show newest first
+    (async () => {
+      const list = await getAttendeesAsync();
+      setAttendees(list);
+    })();
   }, []);
 
   return (
