@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Remoja Tu Biscocho 3000</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              'christmas-red': '#D42426',
+              'christmas-green': '#165B33',
+              'christmas-gold': '#F8B229',
+              'snow-white': '#F8F8FF',
+            },
+            animation: {
+              'spin-slow': 'spin 3s linear infinite',
+              'bounce-fast': 'bounce 0.5s infinite',
+              'wiggle': 'wiggle 1s ease-in-out infinite',
+              'float': 'float 3s ease-in-out infinite',
+              'marquee-infinite': 'marquee 15s linear infinite',
+              'snow-fall': 'snow 10s linear infinite',
+            },
+            keyframes: {
+              wiggle: {
+                '0%, 100%': { transform: 'rotate(-3deg)' },
+                '50%': { transform: 'rotate(3deg)' },
+              },
+              float: {
+                '0%, 100%': { transform: 'translateY(0)' },
+                '50%': { transform: 'translateY(-10px)' },
+              },
+              marquee: {
+                '0%': { transform: 'translateX(0%)' },
+                '100%': { transform: 'translateX(-100%)' },
+              },
+              snow: {
+                '0%': { transform: 'translateY(-10vh) translateX(0)', opacity: '0.8' },
+                '100%': { transform: 'translateY(110vh) translateX(20px)', opacity: '0.2' },
+              }
+            },
+            fontFamily: {
+              'comic': ['"Comic Sans MS"', '"Comic Sans"', 'cursive'],
+            }
+          },
+        },
+      }
+    </script>
+  <script type="importmap">
+{
+  "imports": {
+    "react": "https://aistudiocdn.com/react@^19.2.0",
+    "react-dom/": "https://aistudiocdn.com/react-dom@^19.2.0/",
+    "react/": "https://aistudiocdn.com/react@^19.2.0/"
+  }
+}
+</script>
+<link rel="stylesheet" href="/index.css">
+</head>
+  <body class="bg-christmas-green text-white font-comic">
+    <div id="root"></div>
+  <script type="module" src="/index.tsx"></script>
+</body>
+</html>
