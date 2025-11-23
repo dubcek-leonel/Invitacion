@@ -39,7 +39,21 @@ export const Admin: React.FC = () => {
 
   const onRemove = async (id: string) => {
     setBusy(true);
+    const b = bans.find((x) => x.id === id);
     await removeBan(id);
+    if (b) {
+      const archived = getArchivedByName(b.firstName, b.lastName);
+      if (archived) {
+        await saveAttendee({
+          firstName: archived.firstName,
+          lastName: archived.lastName,
+          cycle: archived.cycle,
+          career: archived.career,
+          contribution: archived.contribution,
+        });
+        removeArchivedByName(b.firstName, b.lastName);
+      }
+    }
     await load();
     setBusy(false);
   };
