@@ -17,6 +17,9 @@ export const Admin: React.FC = () => {
   const [bansPage, setBansPage] = useState(1);
   const [appealsPage, setAppealsPage] = useState(1);
   const pageSize = 10;
+  const totalAttendeePages = Math.max(1, Math.ceil(attendees.length / pageSize));
+  const totalBanPages = Math.max(1, Math.ceil(bans.length / pageSize));
+  const totalAppealPages = Math.max(1, Math.ceil(appeals.length / pageSize));
 
   const load = async () => {
     const data = await listBans();
@@ -36,6 +39,16 @@ export const Admin: React.FC = () => {
     if (activeTab === 'bans') setBansPage(1);
     if (activeTab === 'appeals') setAppealsPage(1);
   }, [activeTab]);
+
+  useEffect(() => {
+    setAttendeesPage((p) => Math.min(p, totalAttendeePages));
+  }, [attendees.length]);
+  useEffect(() => {
+    setBansPage((p) => Math.min(p, totalBanPages));
+  }, [bans.length]);
+  useEffect(() => {
+    setAppealsPage((p) => Math.min(p, totalAppealPages));
+  }, [appeals.length]);
 
   const onLogin = (e: React.FormEvent) => {
     e.preventDefault();
@@ -271,11 +284,11 @@ export const Admin: React.FC = () => {
             className="bg-white/10 text-white border border-white/20 px-3 py-1 rounded disabled:opacity-50"
           >Anterior</button>
           <span className="text-sm">
-            Página {attendeesPage} de {Math.max(1, Math.ceil(attendees.length / pageSize))}
+            Página {attendeesPage} de {totalAttendeePages}
           </span>
           <button
-            onClick={() => setAttendeesPage((p) => (p < Math.ceil(attendees.length / pageSize) ? p + 1 : p))}
-            disabled={attendeesPage >= Math.ceil(attendees.length / pageSize)}
+            onClick={() => setAttendeesPage((p) => (p < totalAttendeePages ? p + 1 : p))}
+            disabled={attendeesPage >= totalAttendeePages}
             className="bg-white/10 text-white border border-white/20 px-3 py-1 rounded disabled:opacity-50"
           >Siguiente</button>
         </div>
@@ -362,11 +375,11 @@ export const Admin: React.FC = () => {
             className="bg-white/10 text-white border border-white/20 px-3 py-1 rounded disabled:opacity-50"
           >Anterior</button>
           <span className="text-sm">
-            Página {bansPage} de {Math.max(1, Math.ceil(bans.length / pageSize))}
+            Página {bansPage} de {totalBanPages}
           </span>
           <button
-            onClick={() => setBansPage((p) => (p < Math.ceil(bans.length / pageSize) ? p + 1 : p))}
-            disabled={bansPage >= Math.ceil(bans.length / pageSize)}
+            onClick={() => setBansPage((p) => (p < totalBanPages ? p + 1 : p))}
+            disabled={bansPage >= totalBanPages}
             className="bg-white/10 text-white border border-white/20 px-3 py-1 rounded disabled:opacity-50"
           >Siguiente</button>
         </div>
@@ -487,11 +500,11 @@ export const Admin: React.FC = () => {
             className="bg-white/10 text-white border border-white/20 px-3 py-1 rounded disabled:opacity-50"
           >Anterior</button>
           <span className="text-sm">
-            Página {appealsPage} de {Math.max(1, Math.ceil(appeals.length / pageSize))}
+            Página {appealsPage} de {totalAppealPages}
           </span>
           <button
-            onClick={() => setAppealsPage((p) => (p < Math.ceil(appeals.length / pageSize) ? p + 1 : p))}
-            disabled={appealsPage >= Math.ceil(appeals.length / pageSize)}
+            onClick={() => setAppealsPage((p) => (p < totalAppealPages ? p + 1 : p))}
+            disabled={appealsPage >= totalAppealPages}
             className="bg-white/10 text-white border border-white/20 px-3 py-1 rounded disabled:opacity-50"
           >Siguiente</button>
         </div>

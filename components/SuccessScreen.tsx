@@ -9,6 +9,10 @@ export const SuccessScreen: React.FC = () => {
   const totalPages = Math.max(1, Math.ceil(attendees.length / pageSize));
   const startIndex = (page - 1) * pageSize + 1;
   const endIndex = Math.min(attendees.length, page * pageSize);
+  useEffect(() => {
+    const t = Math.max(1, Math.ceil(attendees.length / pageSize));
+    setPage((p) => Math.min(p, t));
+  }, [attendees.length]);
 
   useEffect(() => {
     (async () => {
@@ -99,15 +103,15 @@ export const SuccessScreen: React.FC = () => {
                 className="bg-white/10 text-black border border-christmas-red px-4 py-2 rounded disabled:opacity-50"
               >Anterior</button>
               <span className="text-sm text-black">
-                Página {page} de {totalPages} · Mostrando {attendees.length ? startIndex : 0}–{attendees.length ? endIndex : 0} de {attendees.length}
+                Página {page} de {totalPages}
               </span>
               <button
                 onClick={() => setPage((p) => (p < Math.ceil(attendees.length / pageSize) ? p + 1 : p))}
-                disabled={page >= Math.ceil(attendees.length / pageSize)}
+                disabled={page >= totalPages}
                 className="bg-white/10 text-black border border-christmas-red px-4 py-2 rounded disabled:opacity-50"
               >Siguiente</button>
             </div>
-            <div className="md:hidden fixed bottom-4 left-0 right-0 px-4">
+            <div className="md:hidden mt-3">
               <div className="bg-white border border-christmas-red rounded-xl p-2 flex items-center justify-between">
                 <button
                   onClick={() => setPage((p) => Math.max(1, p - 1))}
@@ -115,7 +119,7 @@ export const SuccessScreen: React.FC = () => {
                   className="bg-christmas-green text-white px-3 py-1 rounded disabled:opacity-50 text-xs"
                 >Anterior</button>
                 <span className="text-xs text-black">
-                  Página {page} de {totalPages} · {attendees.length ? startIndex : 0}–{attendees.length ? endIndex : 0} de {attendees.length}
+                  Página {page} de {totalPages}
                 </span>
                 <button
                   onClick={() => setPage((p) => (p < totalPages ? p + 1 : p))}
