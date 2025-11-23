@@ -219,12 +219,27 @@ export const Admin: React.FC = () => {
                   b.lastName.toLowerCase() === a.lastName.toLowerCase()
               );
               return (
-                <div key={a.id} className="bg-white/10 border border-white/20 rounded-xl p-3">
-                  <div className="font-bold">{a.firstName} {a.lastName}</div>
-                  <div className="text-sm">{a.career}</div>
-                  <div className="text-sm">Ciclo {a.cycle}</div>
-                  <div className="text-sm">{a.contribution}</div>
-                  <div className="text-sm">{banned ? 'BANEADO' : 'OK'}</div>
+                <div key={a.id} className="bg-white/10 border border-white/20 rounded-xl p-4">
+                  <div>
+                    <div className="text-xs uppercase text-gray-300">Nombre</div>
+                    <div className="font-bold truncate">{a.firstName} {a.lastName}</div>
+                  </div>
+                  <div className="mt-2">
+                    <div className="text-xs uppercase text-gray-300">Carrera</div>
+                    <div className="truncate">{a.career}</div>
+                  </div>
+                  <div className="mt-2">
+                    <div className="text-xs uppercase text-gray-300">Ciclo</div>
+                    <div>Ciclo {a.cycle}</div>
+                  </div>
+                  <div className="mt-2">
+                    <div className="text-xs uppercase text-gray-300">Trae</div>
+                    <div className="truncate">{a.contribution}</div>
+                  </div>
+                  <div className="mt-2">
+                    <div className="text-xs uppercase text-gray-300">Estado</div>
+                    <div>{banned ? 'BANEADO' : 'OK'}</div>
+                  </div>
                   <div className="mt-2 flex gap-2">
                     {!banned ? (
                       <button disabled={busy} onClick={() => onBanAttendee(a)} className="bg-red-600 text-white font-bold py-2 px-3 rounded w-full">Banear</button>
@@ -235,6 +250,19 @@ export const Admin: React.FC = () => {
                 </div>
               );
             })}
+        </div>
+        <div className="md:hidden mt-3 flex items-center justify-between">
+          <button
+            onClick={() => setAttendeesPage((p) => Math.max(1, p - 1))}
+            disabled={attendeesPage === 1}
+            className="bg-white/10 text-white border border-white/20 px-4 py-2 rounded disabled:opacity-50"
+          >Anterior</button>
+          <span className="text-xs">Página {attendeesPage} de {Math.max(1, Math.ceil(attendees.length / pageSize))}</span>
+          <button
+            onClick={() => setAttendeesPage((p) => (p < Math.ceil(attendees.length / pageSize) ? p + 1 : p))}
+            disabled={attendeesPage >= Math.ceil(attendees.length / pageSize)}
+            className="bg-white/10 text-white border border-white/20 px-4 py-2 rounded disabled:opacity-50"
+          >Siguiente</button>
         </div>
         <div className="mt-4 flex items-center justify-end gap-2">
           <button
@@ -298,15 +326,34 @@ export const Admin: React.FC = () => {
           {bans
             .slice((bansPage - 1) * pageSize, bansPage * pageSize)
             .map((b) => (
-              <div key={b.id} className="bg-white/10 border border-white/20 rounded-xl p-3">
-                <div className="font-bold">{b.firstName} {b.lastName}</div>
-                <div className="text-sm">{b.reason}</div>
-                <div className="text-xs">{new Date(b.timestamp).toLocaleString()}</div>
+              <div key={b.id} className="bg-white/10 border border-white/20 rounded-xl p-4">
+                <div>
+                  <div className="text-xs uppercase text-gray-300">Nombre</div>
+                  <div className="font-bold truncate">{b.firstName} {b.lastName}</div>
+                </div>
+                <div className="mt-2">
+                  <div className="text-xs uppercase text-gray-300">Motivo</div>
+                  <div className="truncate">{b.reason}</div>
+                </div>
+                <div className="mt-2 text-xs">{new Date(b.timestamp).toLocaleString()}</div>
                 <div className="mt-2">
                   <button disabled={busy} onClick={() => onRemove(b.id)} className="bg-red-600 text-white font-bold py-2 px-3 rounded w-full">Quitar</button>
                 </div>
               </div>
             ))}
+        </div>
+        <div className="md:hidden mt-3 flex items-center justify-between">
+          <button
+            onClick={() => setBansPage((p) => Math.max(1, p - 1))}
+            disabled={bansPage === 1}
+            className="bg-white/10 text-white border border-white/20 px-4 py-2 rounded disabled:opacity-50"
+          >Anterior</button>
+          <span className="text-xs">Página {bansPage} de {Math.max(1, Math.ceil(bans.length / pageSize))}</span>
+          <button
+            onClick={() => setBansPage((p) => (p < Math.ceil(bans.length / pageSize) ? p + 1 : p))}
+            disabled={bansPage >= Math.ceil(bans.length / pageSize)}
+            className="bg-white/10 text-white border border-white/20 px-4 py-2 rounded disabled:opacity-50"
+          >Siguiente</button>
         </div>
         <div className="mt-4 flex items-center justify-end gap-2">
           <button
@@ -394,10 +441,16 @@ export const Admin: React.FC = () => {
               const status = String(a.status).toUpperCase();
               const isPending = status === 'PENDING';
               return (
-                <div key={a.id} className="bg-white/10 border border-white/20 rounded-xl p-3">
-                  <div className="font-bold">{a.firstName} {a.lastName}</div>
-                  <div className="text-sm">{a.message}</div>
-                  <div className="text-xs">{new Date(a.timestamp).toLocaleString()}</div>
+                <div key={a.id} className="bg-white/10 border border-white/20 rounded-xl p-4">
+                  <div>
+                    <div className="text-xs uppercase text-gray-300">Nombre</div>
+                    <div className="font-bold truncate">{a.firstName} {a.lastName}</div>
+                  </div>
+                  <div className="mt-2">
+                    <div className="text-xs uppercase text-gray-300">Mensaje</div>
+                    <div className="truncate">{a.message}</div>
+                  </div>
+                  <div className="mt-2 text-xs">{new Date(a.timestamp).toLocaleString()}</div>
                   <div className="mt-2 flex gap-2">
                     <button
                       disabled={busy || !isPending}
@@ -413,6 +466,19 @@ export const Admin: React.FC = () => {
                 </div>
               );
             })}
+        </div>
+        <div className="md:hidden mt-3 flex items-center justify-between">
+          <button
+            onClick={() => setAppealsPage((p) => Math.max(1, p - 1))}
+            disabled={appealsPage === 1}
+            className="bg-white/10 text-white border border-white/20 px-4 py-2 rounded disabled:opacity-50"
+          >Anterior</button>
+          <span className="text-xs">Página {appealsPage} de {Math.max(1, Math.ceil(appeals.length / pageSize))}</span>
+          <button
+            onClick={() => setAppealsPage((p) => (p < Math.ceil(appeals.length / pageSize) ? p + 1 : p))}
+            disabled={appealsPage >= Math.ceil(appeals.length / pageSize)}
+            className="bg-white/10 text-white border border-white/20 px-4 py-2 rounded disabled:opacity-50"
+          >Siguiente</button>
         </div>
         <div className="mt-4 flex items-center justify-end gap-2">
           <button

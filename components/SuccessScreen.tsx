@@ -6,6 +6,9 @@ export const SuccessScreen: React.FC = () => {
   const [attendees, setAttendees] = useState<Attendee[]>([]);
   const [page, setPage] = useState(1);
   const pageSize = 10;
+  const totalPages = Math.max(1, Math.ceil(attendees.length / pageSize));
+  const startIndex = (page - 1) * pageSize + 1;
+  const endIndex = Math.min(attendees.length, page * pageSize);
 
   useEffect(() => {
     (async () => {
@@ -60,41 +63,66 @@ export const SuccessScreen: React.FC = () => {
                           .slice((page - 1) * pageSize, page * pageSize)
                           .map((a) => (
                             <tr key={a.id} className="border-b border-gray-200 hover:bg-red-50">
-                                <td className="p-3 font-bold">{a.firstName} {a.lastName}</td>
-                                <td className="p-3">{a.career}</td>
-                                <td className="p-3 text-red-600 font-bold">{a.contribution}</td>
-                                <td className="p-3 text-center">{a.cycle}</td>
+                                <td className="p-3 font-bold whitespace-normal break-words">{a.firstName} {a.lastName}</td>
+                                <td className="p-3 whitespace-normal break-words">{a.career}</td>
+                                <td className="p-3 text-red-600 font-bold whitespace-normal break-words">{a.contribution}</td>
+                                <td className="p-3 text-center whitespace-normal break-words">{a.cycle}</td>
                             </tr>
                         ))}
                     </tbody>
                 </table>
             </div>
-            <div className="md:hidden space-y-3">
-              {attendees
-                .slice((page - 1) * pageSize, page * pageSize)
-                .map((a) => (
-                  <div key={a.id} className="bg-white border border-christmas-green rounded-xl p-3">
-                    <div className="font-bold text-black">{a.firstName} {a.lastName}</div>
-                    <div className="text-sm text-black">{a.career}</div>
-                    <div className="text-sm text-red-600 font-bold">{a.contribution}</div>
-                    <div className="text-xs text-black">Ciclo {a.cycle}</div>
-                  </div>
-                ))}
+            <div className="md:hidden">
+              <div className="grid grid-cols-4 gap-2 bg-christmas-green text-white rounded-t-xl">
+                <div className="p-2 text-xs font-bold">Nombre</div>
+                <div className="p-2 text-xs font-bold">Carrera</div>
+                <div className="p-2 text-xs font-bold">Trae</div>
+                <div className="p-2 text-xs font-bold text-center">Ciclo</div>
+              </div>
+              <div className="divide-y divide-gray-200 bg-white rounded-b-xl border border-christmas-green">
+                {attendees
+                  .slice((page - 1) * pageSize, page * pageSize)
+                  .map((a) => (
+                    <div key={a.id} className="grid grid-cols-4 gap-2 items-start">
+                      <div className="p-2 font-bold text-black whitespace-normal break-words">{a.firstName} {a.lastName}</div>
+                      <div className="p-2 text-black whitespace-normal break-words">{a.career}</div>
+                      <div className="p-2 text-red-600 font-bold whitespace-normal break-words">{a.contribution}</div>
+                      <div className="p-2 text-black text-center whitespace-normal break-words">{a.cycle}</div>
+                    </div>
+                  ))}
+              </div>
             </div>
-            <div className="mt-4 flex items-center justify-end gap-2">
+            <div className="mt-4 hidden md:flex items-center justify-end gap-2">
               <button
                 onClick={() => setPage((p) => Math.max(1, p - 1))}
                 disabled={page === 1}
                 className="bg-white/10 text-black border border-christmas-red px-4 py-2 rounded disabled:opacity-50"
               >Anterior</button>
               <span className="text-sm text-black">
-                Página {page} de {Math.max(1, Math.ceil(attendees.length / pageSize))}
+                Página {page} de {totalPages} · Mostrando {attendees.length ? startIndex : 0}–{attendees.length ? endIndex : 0} de {attendees.length}
               </span>
               <button
                 onClick={() => setPage((p) => (p < Math.ceil(attendees.length / pageSize) ? p + 1 : p))}
                 disabled={page >= Math.ceil(attendees.length / pageSize)}
                 className="bg-white/10 text-black border border-christmas-red px-4 py-2 rounded disabled:opacity-50"
               >Siguiente</button>
+            </div>
+            <div className="md:hidden fixed bottom-4 left-0 right-0 px-4">
+              <div className="bg-white border border-christmas-red rounded-xl p-2 flex items-center justify-between">
+                <button
+                  onClick={() => setPage((p) => Math.max(1, p - 1))}
+                  disabled={page === 1}
+                  className="bg-christmas-green text-white px-3 py-1 rounded disabled:opacity-50 text-xs"
+                >Anterior</button>
+                <span className="text-xs text-black">
+                  Página {page} de {totalPages} · {attendees.length ? startIndex : 0}–{attendees.length ? endIndex : 0} de {attendees.length}
+                </span>
+                <button
+                  onClick={() => setPage((p) => (p < totalPages ? p + 1 : p))}
+                  disabled={page >= totalPages}
+                  className="bg-christmas-green text-white px-3 py-1 rounded disabled:opacity-50 text-xs"
+                >Siguiente</button>
+              </div>
             </div>
             {attendees.length === 0 && <p className="text-center text-gray-500 mt-4">Nadie ha confirmado, eres el primero xd</p>}
         </div>
