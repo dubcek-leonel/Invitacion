@@ -30,7 +30,7 @@ const App: React.FC = () => {
   }, [navigate]);
 
   const handleSuccess = () => {
-    navigate('/success');
+    navigate('/lista');
   };
 
   const handleBan = () => {
@@ -59,8 +59,8 @@ const App: React.FC = () => {
         <Routes>
           <Route path="/admin" element={<Admin />} />
           <Route path="/baneado" element={<BannedScreen />} />
-          <Route path="/success" element={<SuccessScreen />} />
-          <Route path="/registro" element={
+          <Route path="/lista" element={<SuccessScreen />} />
+          <Route path="/" element={
             <>
               <ShitpostHeader />
               <main className="container mx-auto px-4 py-8">
@@ -74,7 +74,6 @@ const App: React.FC = () => {
               </main>
             </>
           } />
-          <Route path="/" element={<Navigate to="/registro" replace />} />
         </Routes>
       </div>
       <Footer />
