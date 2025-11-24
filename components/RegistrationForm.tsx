@@ -26,11 +26,11 @@ export const RegistrationForm: React.FC<RegistrationFormProps> = ({ onSuccess, o
           onBan();
         } else {
           const attendee: Omit<Attendee, 'id' | 'timestamp'> = {
-            firstName,
-            lastName,
+            firstName: firstName.trim().slice(0, 18),
+            lastName: lastName.trim().slice(0, 18),
             cycle,
-            career,
-            contribution,
+            career: career.trim().slice(0, 40),
+            contribution: contribution.trim().slice(0, 70),
           };
           await saveAttendee(attendee);
           onSuccess();
@@ -73,6 +73,7 @@ export const RegistrationForm: React.FC<RegistrationFormProps> = ({ onSuccess, o
                 <input
                     type="text"
                     required
+                    maxLength={18}
                     value={firstName}
                     onChange={(e) => setFirstName(e.target.value)}
                     className="w-full p-3 bg-gray-100 border-2 border-christmas-green text-black focus:outline-none focus:ring-4 focus:ring-christmas-gold rounded-xl transition-all"
@@ -84,6 +85,7 @@ export const RegistrationForm: React.FC<RegistrationFormProps> = ({ onSuccess, o
                 <input
                     type="text"
                     required
+                    maxLength={18}
                     value={lastName}
                     onChange={(e) => setLastName(e.target.value)}
                     className="w-full p-3 bg-gray-100 border-2 border-christmas-green text-black focus:outline-none focus:ring-4 focus:ring-christmas-gold rounded-xl transition-all"
@@ -114,6 +116,7 @@ export const RegistrationForm: React.FC<RegistrationFormProps> = ({ onSuccess, o
           <input
             type="text"
             required
+            maxLength={40}
             value={career}
             onChange={(e) => setCareer(e.target.value)}
             className="w-full p-3 bg-gray-100 border-2 border-christmas-green text-black focus:outline-none focus:ring-4 focus:ring-christmas-gold rounded-xl transition-all"
@@ -128,6 +131,7 @@ export const RegistrationForm: React.FC<RegistrationFormProps> = ({ onSuccess, o
           <input
             type="text"
             required
+            maxLength={70}
             value={contribution}
             onChange={(e) => setContribution(e.target.value)}
             className="w-full p-3 bg-white border-2 border-christmas-red text-black focus:outline-none focus:ring-4 focus:ring-christmas-gold rounded-xl placeholder-red-300 font-bold"

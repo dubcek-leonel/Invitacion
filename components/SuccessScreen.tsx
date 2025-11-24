@@ -1,10 +1,13 @@
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { getAttendeesAsync } from '../services/db';
 import { Attendee } from '../types';
 
 export const SuccessScreen: React.FC = () => {
+  const navigate = useNavigate();
   const [attendees, setAttendees] = useState<Attendee[]>([]);
   const [page, setPage] = useState(1);
+  const [expanded, setExpanded] = useState<Record<string, boolean>>({});
   const pageSize = 10;
   const totalPages = Math.max(1, Math.ceil(attendees.length / pageSize));
   const startIndex = (page - 1) * pageSize + 1;
@@ -23,6 +26,13 @@ export const SuccessScreen: React.FC = () => {
 
   return (
     <div className="min-h-screen flex flex-col items-center p-6 bg-gradient-to-br from-green-800 via-red-800 to-green-900 text-center pb-32">
+      <button
+        aria-label="Volver al formulario"
+        onClick={() => navigate('/')}
+        className="fixed top-3 left-3 z-50 bg-black/60 text-white border border-white/20 rounded-full px-3 py-2 text-sm md:text-base hover:bg-black/80"
+      >
+        ← Volver
+      </button>
       <h2 className="text-4xl md:text-5xl font-bold text-yellow-400 mb-8 drop-shadow-lg animate-wiggle mt-8">
         ¡YA ESTÁS DENTRO MAQUINOLA!
       </h2>
@@ -69,32 +79,48 @@ export const SuccessScreen: React.FC = () => {
                             <tr key={a.id} className="border-b border-gray-200 hover:bg-red-50">
                                 <td className="p-3 font-bold whitespace-normal break-words">{a.firstName} {a.lastName}</td>
                                 <td className="p-3 whitespace-normal break-words">{a.career}</td>
-                                <td className="p-3 text-red-600 font-bold whitespace-normal break-words">{a.contribution}</td>
+                                <td className="p-3 text-red-600 font-bold whitespace-normal break-words" style={{ overflowWrap: 'anywhere' }}>{a.contribution}</td>
                                 <td className="p-3 text-center whitespace-normal break-words">{a.cycle}</td>
-                            </tr>
+                          </tr>
                         ))}
-                    </tbody>
-                </table>
+                </tbody>
+            </table>
             </div>
-            <div className="md:hidden">
-              <div className="grid grid-cols-4 gap-2 bg-christmas-green text-white rounded-t-xl">
-                <div className="p-2 text-xs font-bold">Nombre</div>
-                <div className="p-2 text-xs font-bold">Carrera</div>
-                <div className="p-2 text-xs font-bold">Trae</div>
-                <div className="p-2 text-xs font-bold text-center">Ciclo</div>
-              </div>
-              <div className="divide-y divide-gray-200 bg-white rounded-b-xl border border-christmas-green">
-                {attendees
-                  .slice((page - 1) * pageSize, page * pageSize)
-                  .map((a) => (
-                    <div key={a.id} className="grid grid-cols-4 gap-2 items-start">
-                      <div className="p-2 font-bold text-black whitespace-normal break-words">{a.firstName} {a.lastName}</div>
-                      <div className="p-2 text-black whitespace-normal break-words">{a.career}</div>
-                      <div className="p-2 text-red-600 font-bold whitespace-normal break-words">{a.contribution}</div>
-                      <div className="p-2 text-black text-center whitespace-normal break-words">{a.cycle}</div>
+            <div className="md:hidden space-y-2">
+              {attendees
+                .slice((page - 1) * pageSize, page * pageSize)
+                .map((a) => (
+                  <div key={a.id} className="bg-white rounded-xl border border-christmas-green p-3 relative overflow-hidden pr-12">
+                    <div className="text-sm text-black whitespace-normal break-words" style={{ overflowWrap: 'anywhere' }}>
+                      <span className="text-gray-500 font-semibold">Nombre:</span> <span className="font-bold">{a.firstName}</span>
                     </div>
-                  ))}
-              </div>
+                    <div className="text-sm text-black whitespace-normal break-words" style={{ overflowWrap: 'anywhere' }}>
+                      <span className="text-gray-500 font-semibold">Apellido:</span> <span className="font-bold">{a.lastName}</span>
+                    </div>
+                    <div className="text-xs text-gray-700 whitespace-normal break-words mt-0.5" style={{ overflowWrap: 'anywhere' }}>
+                      <span className="text-gray-500 font-semibold">Carrera:</span> {a.career}
+                    </div>
+                    <div className="mt-2 relative">
+                      <div className="text-[11px] text-gray-700"><span className="font-semibold">Trae:</span></div>
+                      <div className="text-xs text-red-600 font-bold whitespace-normal break-words overflow-hidden" style={{ lineHeight: '1.3em', maxHeight: (!expanded[a.id] && a.contribution && a.contribution.length > 60) ? '2.6em' : 'none', overflowWrap: 'anywhere' }}>
+                        {a.contribution}
+                      </div>
+                      {(!expanded[a.id] && a.contribution && a.contribution.length > 60) && (
+                        <div className="pointer-events-none absolute bottom-0 left-0 right-0 h-4 bg-gradient-to-t from-white to-transparent"></div>
+                      )}
+                      {(a.contribution && a.contribution.length > 60) && (
+                        <button
+                          aria-expanded={!!expanded[a.id]}
+                          className="text-[12px] font-medium text-blue-600 underline mt-1 hover:text-blue-700 active:text-blue-800"
+                          onClick={() => setExpanded((e) => ({...e, [a.id]: !e[a.id]}))}
+                        >
+                          {expanded[a.id] ? 'Ver menos' : 'Ver más'}
+                        </button>
+                      )}
+                    </div>
+                    <span className="absolute top-2 right-2 inline-block bg-christmas-green text-white text-xs font-bold px-2 py-1 rounded">Ciclo {a.cycle}</span>
+                  </div>
+                ))}
             </div>
             <div className="mt-4 hidden md:flex items-center justify-end gap-2">
               <button
@@ -106,7 +132,7 @@ export const SuccessScreen: React.FC = () => {
                 Página {page} de {totalPages}
               </span>
               <button
-                onClick={() => setPage((p) => (p < Math.ceil(attendees.length / pageSize) ? p + 1 : p))}
+                onClick={() => setPage((p) => (p < totalPages ? p + 1 : p))}
                 disabled={page >= totalPages}
                 className="bg-white/10 text-black border border-christmas-red px-4 py-2 rounded disabled:opacity-50"
               >Siguiente</button>

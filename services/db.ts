@@ -14,15 +14,12 @@ const ARCHIVE_KEY = "attendees_archive";
 export const saveAttendee = async (
   attendee: Omit<Attendee, "id" | "timestamp">
 ): Promise<void> => {
-  const currentData = getAttendees();
   const newAttendee: Attendee = {
     ...attendee,
     id: Math.random().toString(36).substring(7),
     timestamp: Date.now(),
   };
 
-  currentData.push(newAttendee);
-  localStorage.setItem(DB_KEY, JSON.stringify(currentData));
   localStorage.setItem(
     CURRENT_USER_KEY,
     JSON.stringify({
@@ -41,8 +38,14 @@ export const saveAttendee = async (
       timestamp: newAttendee.timestamp,
     });
     if (error) {
-      console.error("Supabase insert failed", error);
+      const currentData = getAttendees();
+      currentData.push(newAttendee);
+      localStorage.setItem(DB_KEY, JSON.stringify(currentData));
     }
+  } else {
+    const currentData = getAttendees();
+    currentData.push(newAttendee);
+    localStorage.setItem(DB_KEY, JSON.stringify(currentData));
   }
 };
 
@@ -67,18 +70,16 @@ export const getAttendeesAsync = async (): Promise<Attendee[]> => {
         .select("*")
         .order("timestamp", { ascending: false });
       if (error) throw error;
-      if (data && data.length > 0) {
-        const mapped = (data as any[]).map((d) => ({
-          id: String(d.id),
-          firstName: d.firstName,
-          lastName: d.lastName,
-          cycle: d.cycle,
-          career: d.career,
-          contribution: d.contribution,
-          timestamp: d.timestamp,
-        })) as Attendee[];
-        return mapped.filter((a) => !isBanned(a));
-      }
+      const mapped = ((data as any[]) ?? []).map((d) => ({
+        id: String(d.id),
+        firstName: d.firstName,
+        lastName: d.lastName,
+        cycle: d.cycle,
+        career: d.career,
+        contribution: d.contribution,
+        timestamp: d.timestamp,
+      })) as Attendee[];
+      return mapped.filter((a) => !isBanned(a));
     } catch (e) {
       console.error("Supabase select failed", e);
     }
@@ -91,12 +92,10 @@ export const getAttendeesAsync = async (): Promise<Attendee[]> => {
 export const removeAttendee = async (id: string): Promise<void> => {
   if (SUPABASE_ENABLED) {
     const { error } = await supabase.from("attendees").delete().eq("id", id);
-    if (error) {
-      const list = getAttendees();
-      const next = list.filter((a) => a.id !== id);
-      localStorage.setItem(DB_KEY, JSON.stringify(next));
-      return;
-    }
+    const list = getAttendees();
+    const next = list.filter((a) => a.id !== id);
+    localStorage.setItem(DB_KEY, JSON.stringify(next));
+    if (error) return;
   } else {
     const list = getAttendees();
     const next = list.filter((a) => a.id !== id);

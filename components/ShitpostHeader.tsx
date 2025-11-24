@@ -7,10 +7,10 @@ export const ShitpostHeader: React.FC = () => {
       <div className="absolute top-2 left-4 text-4xl animate-spin-slow opacity-50">❄️</div>
       <div className="absolute top-4 right-10 text-3xl animate-bounce opacity-50">❄️</div>
 
-      <h1 className="text-4xl md:text-7xl font-bold text-christmas-gold animate-float text-center drop-shadow-[0_4px_4px_rgba(0,0,0,0.8)] tracking-wider uppercase">
+      <h1 className="text-3xl sm:text-5xl md:text-7xl font-bold text-christmas-gold animate-float text-center drop-shadow-[0_4px_4px_rgba(0,0,0,0.8)] tracking-wider uppercase">
         🎅 REMOJA TU BISCOCHO 3000 🎅
       </h1>
-      <p className="text-2xl text-white bg-christmas-green px-6 py-2 rounded-full border-2 border-christmas-gold shadow-md transform -rotate-1 font-bold">
+      <p className="text-base sm:text-2xl text-white bg-christmas-green px-4 sm:px-6 py-1.5 sm:py-2 rounded-full border-2 border-christmas-gold shadow-md sm:-rotate-1 font-bold leading-tight max-w-[90%]">
         🎄 100% REAL, 0 SAPOS 🎄
       </p>
     </div>
