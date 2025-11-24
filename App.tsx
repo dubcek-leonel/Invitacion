@@ -5,6 +5,7 @@ import { RegistrationForm } from './components/RegistrationForm';
 import { BannedScreen } from './components/BannedScreen';
 import { SuccessScreen } from './components/SuccessScreen';
 import { Footer } from './components/Footer';
+import BackgroundMusic from './components/BackgroundMusic';
 import { isUserBanned, isNameBanned, getCurrentUser } from './services/db';
 import { Admin } from './components/Admin';
 
@@ -71,7 +72,7 @@ const App: React.FC = () => {
                   </div>
                   {getCurrentUser() && (
                     <div className="bg-black/50 text-white rounded-2xl p-4 border-2 border-yellow-400 mb-6 flex flex-col sm:flex-row items-center gap-3 sm:gap-4">
-                      <div className="text-base sm:text-lg">📅 25 de Diciembre, 3:00 AM</div>
+                      <div className="text-base sm:text-lg">📅 29 de Noviembre</div>
                       <button onClick={() => navigate('/lista')} className="w-full sm:w-auto bg-yellow-400 hover:bg-yellow-500 text-black font-bold px-4 py-2 rounded-xl border-2 border-black">
                         Ver lista
                       </button>
@@ -84,6 +85,7 @@ const App: React.FC = () => {
           } />
         </Routes>
       </div>
+      <BackgroundMusic youtubeId="fLBqYX3ltqs" autoplay={true} />
       <Footer />
     </div>
   );

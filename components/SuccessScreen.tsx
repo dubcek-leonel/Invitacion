@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getAttendeesAsync } from '../services/db';
+import Chatbot from './Chatbot';
 import { Attendee } from '../types';
 
 export const SuccessScreen: React.FC = () => {
@@ -45,15 +46,14 @@ export const SuccessScreen: React.FC = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
           <div className="bg-black/50 p-4 rounded-lg">
             <h3 className="text-xl text-green-400 font-bold">📅 FECHA</h3>
-            <p className="text-2xl text-white">25 de Diciembre, 3:00 AM</p>
+            <p className="text-2xl text-white">29 de Noviembre</p>
           </div>
 
           <div className="bg-black/50 p-4 rounded-lg">
             <h3 className="text-xl text-red-400 font-bold">📍 UBICACIÓN</h3>
             <p className="text-3xl text-yellow-300 font-bold animate-pulse">
-              🏰 PAPULANDIA 🏰
+              🏰 Salida a Cusco, Final de la Linea 30  🏰
             </p>
-            <p className="text-sm text-gray-300 mt-2">(Donde la tía veneno)</p>
           </div>
         </div>
 
@@ -157,6 +157,7 @@ export const SuccessScreen: React.FC = () => {
             {attendees.length === 0 && <p className="text-center text-gray-500 mt-4">Nadie ha confirmado, eres el primero xd</p>}
         </div>
       </div>
+      <Chatbot />
     </div>
   );
 };

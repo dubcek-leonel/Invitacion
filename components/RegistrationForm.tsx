@@ -15,6 +15,11 @@ export const RegistrationForm: React.FC<RegistrationFormProps> = ({ onSuccess, o
   const [contribution, setContribution] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
+  // Sólo letras latinas (incluye acentos y ñ). No permite espacios, números ni símbolos.
+  const sanitizeName = (value: string) => {
+    return value.replace(/[^A-Za-zÀ-ÖØ-öø-ÿÑñÁÉÍÓÚáéíóúÜü]/g, '');
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
@@ -71,25 +76,27 @@ export const RegistrationForm: React.FC<RegistrationFormProps> = ({ onSuccess, o
             <div>
                 <label className="block text-christmas-green font-bold mb-2 text-lg">Nombre:</label>
                 <input
-                    type="text"
-                    required
-                    maxLength={18}
-                    value={firstName}
-                    onChange={(e) => setFirstName(e.target.value)}
-                    className="w-full p-3 bg-gray-100 border-2 border-christmas-green text-black focus:outline-none focus:ring-4 focus:ring-christmas-gold rounded-xl transition-all"
-                    placeholder="Tu gracia"
+                  type="text"
+                  required
+                  maxLength={18}
+                  value={firstName}
+                  onChange={(e) => setFirstName(sanitizeName(e.target.value))}
+                  className="w-full p-3 bg-gray-100 border-2 border-christmas-green text-black focus:outline-none focus:ring-4 focus:ring-christmas-gold rounded-xl transition-all"
+                  placeholder="Tu gracia"
+                  title="Sólo letras permitidas"
                 />
             </div>
             <div>
                 <label className="block text-christmas-green font-bold mb-2 text-lg">Apellido:</label>
                 <input
-                    type="text"
-                    required
-                    maxLength={18}
-                    value={lastName}
-                    onChange={(e) => setLastName(e.target.value)}
-                    className="w-full p-3 bg-gray-100 border-2 border-christmas-green text-black focus:outline-none focus:ring-4 focus:ring-christmas-gold rounded-xl transition-all"
-                    placeholder="Tu desgracia"
+                  type="text"
+                  required
+                  maxLength={18}
+                  value={lastName}
+                  onChange={(e) => setLastName(sanitizeName(e.target.value))}
+                  className="w-full p-3 bg-gray-100 border-2 border-christmas-green text-black focus:outline-none focus:ring-4 focus:ring-christmas-gold rounded-xl transition-all"
+                  placeholder="Tu desgracia"
+                  title="Sólo letras permitidas"
                 />
             </div>
         </div>
